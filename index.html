@@ -1,20 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-
-  <head>
+<head>
     <meta charset="UTF-8">
-    <title>Interactive 3D Butterflies</title>
-    <link rel="stylesheet" href="./style.css">
-
-  </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haneena Butterflies</title>
+    <!-- استدعاء خط مزخرف (Great Vibes) من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     
-  <body>
-  <p id="help">Try your mouse ^^</p>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/100/three.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.5/dat.gui.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.7.0/Tween.js'></script>
-<script src='https://klevron.github.io/codepen/three.js/OrbitControls.js'></script><script  src="./script.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
 
-  </body>
-  
+        /* حاوية الفراشات (الخلفية) */
+        #app {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* الطبقة الخلفية */
+            /* 
+               تحويل لون الفراشات من البرتقالي إلى البنفسجي 
+               باستخدام تدوير درجة اللون (Hue Rotate)
+            */
+            filter: hue-rotate(260deg); 
+        }
+
+        /* حاوية الاسم */
+        .name-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; /* الطبقة الأمامية */
+            /* 
+               مهم جداً: جعل النص غير قابل للنقر لكي يمر الماوس 
+               عبره ويتفاعل مع الفراشات في الخلفية 
+            */
+            pointer-events: none; 
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive; /* تطبيق الخط المزخرف */
+            font-size: 8rem; /* حجم الخط */
+            color: #4b0082; /* لون بنفسجي غامق (Indigo) */
+            margin: 0;
+            /* إضافة ظل أبيض حول النص لضمان وضوحه فوق الفراشات */
+            text-shadow: 
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 30px rgba(255, 255, 255, 0.8);
+        }
+
+        /* تصغير الخط قليلاً على الجوال */
+        @media (max-width: 600px) {
+            h1 { font-size: 4.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- مكان ظهور الفراشات -->
+    <div id="app"></div>
+
+    <!-- الاسم الظاهر -->
+    <div class="name-container">
+        <h1>Haneena</h1>
+    </div>
+
+    <!-- السكربت الخاص بالفراشات -->
+    <script type="module">
+        import { butterfliesBackground } from 'https://unpkg.com/threejs-toys@0.0.7/build/threejs-toys.module.cdn.min.js'
+
+        const pc = butterfliesBackground({
+            el: document.getElementById('app'),
+            eventsEl: document.body,
+            gpgpuSize: 96,
+            background: 0xffffff,
+            material: 'basic',
+            materialParams: { transparent: true, alphaTest: 0.5 },
+            texture: 'https://assets.codepen.io/33787/butterflies.png',
+            textureCount: 4,
+            wingsScale: [1, 1, 1],
+            wingsWidthSegments: 8,
+            wingsHeightSegments: 8,
+            wingsSpeed: 0.75,
+            wingsDisplacementScale: 1.25,
+            noiseCoordScale: 0.01,
+            noiseTimeCoef: 0.0005,
+            noiseIntensity: 0.0025,
+            attractionRadius1: 100,
+            attractionRadius2: 150,
+            maxVelocity: 0.1
+        });
+    </script>
+</body>
 </html>
