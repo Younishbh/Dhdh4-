@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haneena Butterflies</title>
-    <!-- استدعاء خط مزخرف (Great Vibes) من Google Fonts -->
+    <title>Haneena Formation</title>
+    <!-- استدعاء الخط المزخرف -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     
     <style>
@@ -15,75 +15,117 @@
             height: 100%;
             overflow: hidden;
             background-color: #ffffff;
+            font-family: 'Great Vibes', cursive;
         }
 
-        /* حاوية الفراشات (الخلفية) */
+        /* 1. طبقة الفراشات (في الخلفية تماماً) */
         #app {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* الطبقة الخلفية */
-            /* 
-               تحويل لون الفراشات من البرتقالي إلى البنفسجي 
-               باستخدام تدوير درجة اللون (Hue Rotate)
-            */
-            filter: hue-rotate(260deg); 
+            z-index: 1;
+            /* تحويل اللون للبنفسجي */
+            filter: hue-rotate(260deg) contrast(1.2); 
         }
 
-        /* حاوية الاسم */
-        .name-container {
+        /* تنسيق عام للنص لضمان تطابق الطبقتين */
+        .text-style {
+            font-size: 8rem;
+            margin: 0;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10; /* الطبقة الأمامية */
-            /* 
-               مهم جداً: جعل النص غير قابل للنقر لكي يمر الماوس 
-               عبره ويتفاعل مع الفراشات في الخلفية 
-            */
-            pointer-events: none; 
-            text-align: center;
+            white-space: nowrap;
         }
 
-        h1 {
-            font-family: 'Great Vibes', cursive; /* تطبيق الخط المزخرف */
-            font-size: 8rem; /* حجم الخط */
-            color: #4b0082; /* لون بنفسجي غامق (Indigo) */
-            margin: 0;
-            /* إضافة ظل أبيض حول النص لضمان وضوحه فوق الفراشات */
-            text-shadow: 
-                0 0 10px #fff,
-                0 0 20px #fff,
-                0 0 30px rgba(255, 255, 255, 0.8);
+        /* 2. طبقة القناع (البداية) */
+        /* هذه الطبقة بيضاء والنص أسود، مما يجعل الفراشات تظهر داخل النص فقط */
+        #mask-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white; /* خلفية بيضاء تغطي الفراشات */
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* السحر هنا: الفراشات ستظهر فقط مكان اللون الأسود */
+            mix-blend-mode: lighten; 
+            /* أنيميشن لاختفاء القناع */
+            animation: fadeOutMask 3s ease-in-out forwards;
+            animation-delay: 3s; /* ينتظر 3 ثواني قبل الانتشار */
         }
 
-        /* تصغير الخط قليلاً على الجوال */
+        #mask-layer h1 {
+            color: black; /* يجب أن يكون أسود ليصبح شفافاً مع الفلتر */
+        }
+
+        /* 3. طبقة الاسم النهائي (النهاية) */
+        #final-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0; /* مخفي في البداية */
+            /* أنيميشن لظهور الاسم الثابت */
+            animation: fadeInText 3s ease-in-out forwards;
+            animation-delay: 3s;
+        }
+
+        #final-text-container h1 {
+            color: #4b0082; /* بنفسجي */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        /* تعريف الحركات (Animations) */
+        @keyframes fadeOutMask {
+            to {
+                opacity: 0;
+                pointer-events: none; /* لتعطيل التفاعل بعد الاختفاء */
+            }
+        }
+
+        @keyframes fadeInText {
+            to { opacity: 1; }
+        }
+
+        /* للجوال */
         @media (max-width: 600px) {
-            h1 { font-size: 4.5rem; }
+            .text-style { font-size: 4.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- مكان ظهور الفراشات -->
+    <!-- Canvas الفراشات -->
     <div id="app"></div>
 
-    <!-- الاسم الظاهر -->
-    <div class="name-container">
-        <h1>Haneena</h1>
+    <!-- طبقة القناع: تظهر الفراشات داخل النص فقط في البداية -->
+    <div id="mask-layer">
+        <h1 class="text-style">Haneena</h1>
     </div>
 
-    <!-- السكربت الخاص بالفراشات -->
+    <!-- طبقة النص النهائي: تظهر بعد انتشار الفراشات -->
+    <div id="final-text-container">
+        <h1 class="text-style">Haneena</h1>
+    </div>
+
     <script type="module">
         import { butterfliesBackground } from 'https://unpkg.com/threejs-toys@0.0.7/build/threejs-toys.module.cdn.min.js'
 
-        const pc = butterfliesBackground({
+        butterfliesBackground({
             el: document.getElementById('app'),
             eventsEl: document.body,
             gpgpuSize: 96,
-            background: 0xffffff,
+            background: 0xffffff, // خلفية بيضاء
             material: 'basic',
             materialParams: { transparent: true, alphaTest: 0.5 },
             texture: 'https://assets.codepen.io/33787/butterflies.png',
@@ -96,7 +138,7 @@
             noiseCoordScale: 0.01,
             noiseTimeCoef: 0.0005,
             noiseIntensity: 0.0025,
-            attractionRadius1: 100,
+            attractionRadius1: 100, // نصف قطر جذب أولي
             attractionRadius2: 150,
             maxVelocity: 0.1
         });
